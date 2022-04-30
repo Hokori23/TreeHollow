@@ -1,6 +1,11 @@
 module.exports = {
-  extends: ['alloy', 'alloy/vue'],
-  parser: 'vue-eslint-parser',
+  extends: [
+    // add more generic rulesets here, such as:
+    // 'eslint:recommended',
+    'plugin:vue/vue3-recommended',
+    'prettier',
+    // 'plugin:vue/recommended' // Use this if you are using Vue.js 2.x.
+  ],
   env: {
     // 你的环境变量（包含多个预定义的全局变量）
     //

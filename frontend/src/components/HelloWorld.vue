@@ -14,7 +14,7 @@
       |
       <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Documentation</a>
     </p>
-    <vs-button color="primary" type="border" @click="count++">count is: {{ count }}</vs-button>
+    <vs-button @click="count++"> count is: {{ count }} </vs-button>
     <p>
       Edit
       <code>components/HelloWorld.vue</code> to test hot module replacement.
@@ -25,7 +25,10 @@
 export default {
   name: 'HelloWord',
   props: {
-    msg: String,
+    msg: {
+      type: String,
+      default: '',
+    },
   },
   data: () => ({
     count: 0,
