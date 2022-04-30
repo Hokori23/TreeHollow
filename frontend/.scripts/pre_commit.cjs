@@ -1,6 +1,6 @@
 // import chalk from 'chalk'
 
-const chalk = require('chalk')
+const chalk = require('chalk');
 console.log(
   chalk.red('Error: commit格式错误\n\n'),
   chalk.green(`正确示例：
@@ -19,4 +19,4 @@ console.log(
   revert: 回滚
   temp: 临时保存
   `),
-)
+);
