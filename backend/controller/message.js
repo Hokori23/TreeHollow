@@ -8,12 +8,13 @@ class MessageController {
      */
     static async getMessages(ctx, next){
         //接收客服端
-        let { page = 1, capacity = 10 } = ctx.query;
-        if (page === 0) page = 1;
-        if(page && capacity){
+        const { page = 1, capacity = 10 } = ctx.query;
+        const pageIndex = Number(page);
+        const pageSize = Number(capacity);
+        if(pageIndex && pageSize){
             try{
                 //使用刚刚创建的文章ID查询文章详情，且返回文章详情信息
-                const res = await MessageModel.getMessages(page, capacity);
+                const res = await MessageModel.getMessages(pageIndex, pageSize);
                 ctx.response.status = 200;
                 ctx.body = {
                     code: 200,
@@ -35,7 +36,7 @@ class MessageController {
             ctx.response.status = 416;
             ctx.body = {
                 code: 200,
-                message: '参数不全'
+                message: '参数错误'
             }
         }
     }

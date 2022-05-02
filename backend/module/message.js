@@ -32,8 +32,8 @@ class MessageModel {
         const res = await Message.findAndCountAll({
             attributes: ['id', 'content', 'createdAt'],
             order: [['createdAt', 'ASC']],
-            limit: Number(capacity),
-            offset: (Number(page) - 1) * capacity,
+            limit: capacity,
+            offset: (page - 1) * capacity,
             // where,
             // include: [{
             //     model: Message,
