@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "nanoid": "^3.3.3",
     "vue": "^2.6.14",
     "vue-template-compiler": "^2.6.14",
     "vuesax": "^4.0.1-alpha.25"
