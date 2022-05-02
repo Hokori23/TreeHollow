@@ -17,7 +17,7 @@ class MessageController {
                 const res = await MessageModel.getMessages(pageIndex, pageSize);
                 ctx.response.status = 200;
                 ctx.body = {
-                    code: 200,
+                    code: 0,
                     message: '获取消息记录成功',
                     data: {
                         total: res.count,
@@ -48,20 +48,19 @@ class MessageController {
      */
     static async sendMessage(ctx) {
         let { content } = ctx.query;
-        console.log(typeof content, content);
         if (content) {
             try{
                 // 查询文章详情模型
                 await MessageModel.createMessage(content);
                 ctx.response.status = 200;
                 ctx.body = {
-                    code: 200,
+                    code: 0,
                     message: '发送成功',
                 }
             }catch(err){
                 ctx.response.status = 412;
                 ctx.body = {
-                    code: 0,
+                    code: 412,
                     message: '发送失败',
                     data
                 }
@@ -69,7 +68,7 @@ class MessageController {
         }else {
             ctx.response.status = 416;
             ctx.body = {
-                code: 416,
+                code: 200,
                 message: '参数错误'
             }
         }
