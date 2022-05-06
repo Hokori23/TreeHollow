@@ -1,8 +1,12 @@
 import Vue from 'vue';
 import App from './App.vue';
 import Vuesax from 'vuesax';
+import VueCompositionAPI from '@vue/composition-api';
 import 'vuesax/dist/vuesax.css'; // Vuesax styles
-import 'material-icons/iconfont/material-icons.css';
+import 'animate.css';
+import '@/assets/boxicons.min.css';
+
+Vue.use(VueCompositionAPI);
 Vue.use(Vuesax, {
   // options here
 });

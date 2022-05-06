@@ -1,19 +1,24 @@
 <script>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue';
-export default {
+// import HelloWorld from './components/HelloWorld.vue';
+import Message from './components/Message/Index.vue';
+import Notification from './components/Notification/Index.vue';
+import { defineComponent } from '@vue/composition-api';
+
+export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld,
+    Message,
+    Notification,
   },
-};
+});
 </script>
 
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Hello Vue 3 + Vite" />
+    <Message />
+    <Notification />
   </div>
 </template>
 
@@ -23,6 +28,10 @@ html {
   padding: 0;
   margin: 0;
   height: 100%;
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+  --vs-cyan: 59, 222, 200;
 }
 @font-face {
   font-family: 'Poppins';
@@ -35,7 +44,6 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
