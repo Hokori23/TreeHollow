@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="inp"></div>
+  <div class="comp"></div>
+  <script>
+    function load (){
+
+ document.addEventListener('touchstart',touch, false);
+ document.addEventListener('touchmove',touch, false);
+ document.addEventListener('touchend',touch, false);
+
+ function touch (event){
+     var event = event || window.event;
+
+     var oInp = document.getElementById("inp");
+
+     switch(event.type){
+         case "touchstart":
+             oInp.innerHTML = "Touch started (" + event.touches[0].clientX + "," + event.touches[0].clientY + ")";
+             break;
+         case "touchend":
+             oInp.innerHTML = "<br>Touch end (" + event.touches[0].clientX + "," + event.touches[0].clientY + ")";
+             break;
+         case "touchmove":
+             event.preventDefault();
+             oInp.innerHTML = "<br>Touch moved (" + event.touches[0].clientX + "," + event.touches[0].clientY + ")";
+             break;
+     }
+
+ }
+}
+window.addEventListener('load',load, false);
+  </script>
+</body>
+</html>

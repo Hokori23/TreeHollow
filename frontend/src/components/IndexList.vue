@@ -1,14 +1,26 @@
 <template>
   <div class="main-body">
     <!-- 第一页消息部分 -->
-    <div class="messageWrapper clearfix" ref="messages" @scroll="Judge()">
-      <div class="inner-wrapper" ref="inner" >
+    <div 
+    class="messageWrapper clearfix" 
+    ref="messages" 
+    @scroll="Judge"
+    @touchstart="touchstart"
+    @touchmove="touchmove"
+    @touchend="touchend"
+    :style="styleObj"
+    >
+    <!-- 上拉获取消息部分 -->
+    <div class="news" >{{word}}</div>
+      <div class="getHeight" ref="getHeight">
         <div class="message" v-for="item in dataObj" :key="item.id">
           <vs-button size="large" color="rgb(59,222,200)" gradient class="mess">
-            {{ item.message }}
+            {{ item.content }}
           </vs-button>
         </div>
       </div>
+      <!-- 提示信息 -->
+      <div class="reminder" ref="reminder" v-show="isShowRM">{{ reminder }}</div>
     </div>
     <!-- input消息 -->
     <div class="inputWrapper">
@@ -29,21 +41,42 @@
 
 <script>
 import { nanoid } from 'nanoid';
+// import upFresh from './upFresh';
 export default {
   name: 'IndexList',
+  computed:{
+     // eslint-disable-next-line vue/return-in-computed-property
+     styleObj(){
+       return{
+        transition:`all ${this.duration}ms`,
+        transform:`translate3d(0, ${this.distance}px,0)`
+       }
+     },
+     // eslint-disable-next-line vue/return-in-computed-property
+     word(){
+       if(this.state == 0){
+         return '下拉获取历史消息';
+       }else if(this.state == 1){
+         return '松手更新消息';
+       }else {
+         return '正在加载中'
+       }
+     },
+   },
   data() {
     return {
       dataObj: [],
       inputValue: '',
       ifShow: false,
-      dataCnt: 0,
-      page: 1
+      isFull: false,
+      reminder: '下拉获取数据',
+      isShowRM: true,
+      cue:'',
+      timer:true,
+      distance:0,
+      state:0,
+      startY:0
     };
-  },
-  computed:{
-    isReminder(){
-      return this.$refs.inner.clientHeight > this.$refs.messages.clientHeight;
-    }
   },
   methods: {
     //输入框添加数据
@@ -55,25 +88,38 @@ export default {
       }
       let obj = {
         id: nanoid(),
-        message: this.inputValue,
+        content: this.inputValue,
+        createdAt:Date.now()
       };
       this.dataObj.push(obj);
       this.inputValue = '';
-      this.dataCnt += 1;
+      var cue = this.sendMessage(this.dataObj);
+      this.cue = cue.message;
+    },
+    //后台发送数据
+    sendMessage(content){
+      //发送content内容给后台
     },
     //获取后台数据
-    getMessage(page) {
-      //返回第page页的数据
-      return {
-        code: 0,
-        data: {
-          total:50,
-          messages: ['message1', 'message2', 'message3',
-          'message1', 'message2', 'message3'
-          ],
-        },
-        page: 1,
+    getMessage(capacity, createdAt, before) {
+      //模拟数据 返回数据
+      var dataArr = [];
+      console.log(capacity);
+      for(let i=0 ;i<capacity; i++){
+        var obj = {
+          id:nanoid(),
+          content:'留言',
+          createdAt:Date.now()
+        }
+        dataArr.push(obj);
       }
+      return {
+          code: 0,
+          data: {
+            messages: dataArr
+          },
+          message: '获取留言成功',
+        };
     },
     //判断是否到底部
     Judge() {
@@ -82,43 +128,79 @@ export default {
       var viewHeight = this.$refs.messages.clientHeight;
       var scrollTop = this.$refs.messages.scrollTop;
       var scrollHeight = this.$refs.messages.scrollHeight;
-      if (viewHeight + scrollTop + 2 >= scrollHeight) {
+      if (viewHeight + scrollTop + 10 >= scrollHeight) {
         //加载完所有数据
-        // if (this.dataObj.length >= this.dataCnt) {
-        //   this.reminder = '数据到底啦';
-        //   return;
-        // }
-        this.page += 1;
-        //防止多次重复触发
+        if (this.isFull) {
+          this.reminder = '数据到底啦';
+          return;
+        }
+        //函数节流思想
+        if(!this.timer)
+          return;
+        this.timer = false;
         setTimeout(() => {
-          this.handlerMessage(this.page);
-        }, 200);
+          console.log('我被调用啦');
+          //获取数据
+          this.handlerMessage(2);
+          this.timer = true;
+        }, 500);
       }
     },
     //重新加载后台数据
-    handlerMessage(page) {
-      console.log('我被调用啦');
-      console.log(this.dataObj);
-      let req = this.getMessage(page);
-      this.dataCnt = req.data.total;
-      this.page = req.page;
+    handlerMessage(num) {
+      let req = this.getMessage(num);
+      //数据全部加载完
+      if(req.data.messages.length == 0){
+        this.isFull = true;
+      }
       if (req.code === 0) {
-        req.data.messages.forEach((element) => {
-          let obj = { id: nanoid(), message: element };
-          this.dataObj.push(obj);
-        });
+          this.dataObj = this.dataObj.concat(req.data.messages);
+      }
+      console.log('增加了'+ num + '条数据耶');
+    },
+    touchstart(event){
+      this.distance = 0;
+      //获取初始滑动的Y坐标
+      this.startY = event.targetTouches[0].clientY;
+    },
+    touchmove(event){
+      //判断是否有滚动条 有则不启用
+      var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      if(scrollTop > 0){
+        return ;
+      }
+      //slide为手指下拉的距离
+      var slide = event.targetTouches[0].clientY - this.startY;
+      if(slide > 0){
+      //增加阻力 测试？
+      this.distance = Math.pow(slide,0.8);
+      //下拉到一定距离 示意松手
+        if(this.distance > 50){
+          this.state = 1;
+        }
+      //不够长则恢复 提示重新获取
+        else{
+          this.state = 0;
+        }
       }
     },
+    touchend(){
+      //加载动画
+      // this.duration = 300;
+      if(this.distance > 50){
+        this.distance = 50;
+        //更新数据
+        setTimeout(() => {
+          this.handlerMessage(2);
+        }, 500);
+        this.state = 0;
+        this.distance = 0;
+      }
+    }
   },
-
-  mounted(){
-      this.handlerMessage(1);
-      var divs = document.querySelectorAll('.mess');
-      console.log(divs);
-      console.log(divs.length);
-      console.log(divs[divs.length-1].offsetHeight);
+  mounted() {
+    this.handlerMessage(15);
   }
-
 };
 </script>
 
@@ -146,7 +228,11 @@ export default {
   display: table;
   clear: both;
 }
-
+.news{
+  width: 150px;
+  margin: auto;
+  color: aqua;
+}
 .inputWrapper {
   height: 10%;
   background-color: cadetblue;
@@ -174,13 +260,15 @@ export default {
   margin-left: 20px;
   width: 30%;
 }
-.inner-wrapper{
+.inner-wrapper {
   height: 900px;
 }
-#vs-input--3{
+#vs-input--3 {
   width: 100%;
 }
-/* .reminder {
+.reminder {
   color: aqua;
-} */
+  width: 100px;
+  margin: auto;
+}
 </style>

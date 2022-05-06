@@ -11,7 +11,7 @@
         </div>
       </div>
       <!-- 提示信息 -->
-      <div class="reminder"  ref="reminder" >{{ reminder }}</div>
+      <div class="reminder"  ref="reminder">{{ reminder }}</div>
     </div>
     <!-- input消息 -->
     <div class="inputWrapper">
@@ -42,13 +42,8 @@ export default {
       ifShow: false,
       dataCnt: 0,
       page: 1,
-      reminder: '加载中...',
+      reminder: '下拉获取最新消息'
     };
-  },
-  computed:{
-    isReminder(){
-      return this.$refs.inner.clientHeight > this.$refs.messages.clientHeight;
-    }
   },
   methods: {
     //输入框添加数据
@@ -69,54 +64,46 @@ export default {
     //获取后台数据
     getMessage(page) {
       //返回第page页的数据
-      return {
-        code: 0,
-        data: {
-          total:50,
-          messages: ['message1', 'message2', 'message3'],
-        },
-        page: 1,
-      };
-    },
-    //判断是否到底部
-    Judge() {
-      //临界条件：视口高度+滚动高度>=内容高度
-      //视口高度
-      var viewHeight = this.$refs.messages.clientHeight;
-      var scrollTop = this.$refs.messages.scrollTop;
-      var scrollHeight = this.$refs.messages.scrollHeight;
-      if (viewHeight + scrollTop + 2 >= scrollHeight) {
-        //加载完所有数据
-        if (this.dataObj.length >= this.dataCnt) {
-          this.reminder = '数据到底啦';
-          return;
-        }
-        this.page += 1;
-        //防止多次重复触发
-        setTimeout(() => {
-          this.handlerMessage(this.page);
-        }, 200);
+      if(page == 1){
+         return {
+          code: 0,
+          data: {
+            total:50,
+            messages: ['message1', 'message2', 'message3',
+            'message1', 'message2', 'message3',
+            'message1', 'message2', 'message3',
+            'message1', 'message2', 'message3',
+            'message1', 'message2', 'message3'
+            ],
+          },
+          page: 1,
+          }
+      }
+      else{
+        return {
+          code: 0,
+          data: {
+            total:50,
+            messages: ['add1', 'add2', 'add3'],
+          }
+      }
       }
     },
     Judge2(){
       var observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
-          //提示信息可见（即到底了）
-          if(entry.isIntersecting > 0 ){
-             if (this.dataObj.length >= this.dataCnt) {
-              this.reminder = '数据到底啦';
-              return;
-            }
-            this.page += 1;
-            setTimeout(() => {
-            this.handlerMessage(this.page);
-          }, 200);
+          // 如果不可见，就返回
+          if (entries[0].intersectionRatio <= 0) return;
+          //加载完所有数据
+          if (this.dataObj.length >= this.dataCnt) {
+            this.reminder = '数据到底啦';
+            return;
           }
-        })
-      },
-      {
-        threshold: [1]
+          this.page += 1;
+          this.handlerMessage(this.page);
+          console.log('加载数据');
+      },{
+        threshold:[1]
       }
     );
     var ele = this.$refs.reminder;
@@ -185,7 +172,7 @@ export default {
     bottom: 20px; */
   width: 50%;
   display: inline-block;
-  margin-left: -44px;
+  margin-left: 10px;
 }
 .vs-input {
   width: 100%;
@@ -198,5 +185,7 @@ export default {
 }
 .reminder {
   color: aqua;
+  width: 100px;
+  margin: auto;
 }
 </style>
