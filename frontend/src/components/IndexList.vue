@@ -10,15 +10,12 @@
     @touchend="touchend"
     :style="styleObj"
     >
-    <!-- 上拉获取消息部分 -->
-    <div class="news" >{{word}}</div>
-      <div class="getHeight" ref="getHeight">
-        <div class="message" v-for="item in dataObj" :key="item.id">
-          <vs-button size="large" color="rgb(59,222,200)" gradient class="mess">
-            {{ item.content }}
-          </vs-button>
-        </div>
-      </div>
+      <!-- 上拉获取消息部分 -->
+      <div class="news" >{{word}}</div>
+      <!-- 上拉加载图标 -->
+      <Loading :state="state"/>
+      <!-- 获取的消息列表 -->
+      <Messages :dataObj="dataObj"/>
       <!-- 提示信息 -->
       <div class="reminder" ref="reminder" v-show="isShowRM">{{ reminder }}</div>
     </div>
@@ -40,15 +37,18 @@
 </template>
 
 <script>
-import { nanoid } from 'nanoid';
-// import upFresh from './upFresh';
+import {nanoid} from 'nanoid'
+import Loading from './childhoods/Loading.vue'
+import Messages from './childhoods/Messages.vue'
+import {getMessage, sendMessage} from '../api/messages.js'
+
+
 export default {
   name: 'IndexList',
   computed:{
      // eslint-disable-next-line vue/return-in-computed-property
      styleObj(){
        return{
-        transition:`all ${this.duration}ms`,
         transform:`translate3d(0, ${this.distance}px,0)`
        }
      },
@@ -62,6 +62,10 @@ export default {
          return '正在加载中'
        }
      },
+   },
+   components:{
+     Loading,
+     Messages
    },
   data() {
     return {
@@ -93,35 +97,11 @@ export default {
       };
       this.dataObj.push(obj);
       this.inputValue = '';
-      var cue = this.sendMessage(this.dataObj);
+      var cue = sendMessage(this.dataObj);
       this.cue = cue.message;
     },
-    //后台发送数据
-    sendMessage(content){
-      //发送content内容给后台
-    },
-    //获取后台数据
-    getMessage(capacity, createdAt, before) {
-      //模拟数据 返回数据
-      var dataArr = [];
-      console.log(capacity);
-      for(let i=0 ;i<capacity; i++){
-        var obj = {
-          id:nanoid(),
-          content:'留言',
-          createdAt:Date.now()
-        }
-        dataArr.push(obj);
-      }
-      return {
-          code: 0,
-          data: {
-            messages: dataArr
-          },
-          message: '获取留言成功',
-        };
-    },
-    //判断是否到底部
+    
+    //判断是否到底部 
     Judge() {
       //临界条件：视口高度+滚动高度>=内容高度
       //视口高度
@@ -146,9 +126,27 @@ export default {
         }, 500);
       }
     },
+    //第二种实现下拉加载的思路：使用IntersectionObserver实现
+    Judge2(){
+      var observer = new IntersectionObserver(
+      (entries) => {
+          // 如果不可见，就返回
+          if (entries[0].intersectionRatio <= 0) return;
+          //加载完所有数据
+          if (this.dataObj.length >= this.dataCnt) {
+            this.reminder = '数据到底啦';
+            return;
+          }
+          this.page += 1;
+          this.handlerMessage(this.page);
+          console.log('加载数据');
+      },{
+        threshold:[1]
+      })
+      },
     //重新加载后台数据
-    handlerMessage(num) {
-      let req = this.getMessage(num);
+    handlerMessage(num){
+      let req = getMessage(num);
       //数据全部加载完
       if(req.data.messages.length == 0){
         this.isFull = true;
@@ -164,14 +162,10 @@ export default {
       this.startY = event.targetTouches[0].clientY;
     },
     touchmove(event){
-      //判断是否有滚动条 有则不启用
-      var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-      if(scrollTop > 0){
-        return ;
-      }
       //slide为手指下拉的距离
       var slide = event.targetTouches[0].clientY - this.startY;
       if(slide > 0){
+        event.preventDefault();
       //增加阻力 测试？
       this.distance = Math.pow(slide,0.8);
       //下拉到一定距离 示意松手
@@ -189,11 +183,15 @@ export default {
       // this.duration = 300;
       if(this.distance > 50){
         this.distance = 50;
+        this.state = 2;
         //更新数据
         setTimeout(() => {
           this.handlerMessage(2);
-        }, 500);
-        this.state = 0;
+          this.state = 0; 
+          this.distance = 0;
+        }, 1000);
+      }else{
+        //否则恢复
         this.distance = 0;
       }
     }
@@ -201,7 +199,8 @@ export default {
   mounted() {
     this.handlerMessage(15);
   }
-};
+  
+}
 </script>
 
 <style scoped>
@@ -210,10 +209,6 @@ export default {
   margin: 0;
 }
 .main-body {
-  width: 100%;
-  height: 100%;
-}
-.outer_wrapper {
   width: 100%;
   height: 100%;
 }
@@ -229,19 +224,21 @@ export default {
   clear: both;
 }
 .news{
-  width: 150px;
+  width: 100%;
+  text-align: center;
   margin: auto;
-  color: aqua;
+  color: #2DC4D5;
 }
+
+/* Messages */
+
+
+
 .inputWrapper {
   height: 10%;
   background-color: cadetblue;
   opacity: 0.4;
   overflow: hidden;
-}
-.mess {
-  margin-top: 20px;
-  margin-left: 10px;
 }
 .vs-input-parent {
   /* position: absolute;
