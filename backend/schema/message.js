@@ -1,4 +1,3 @@
-// const moment = require("moment");
 module.exports = function (sequelize, DataTypes) {
     return sequelize.define('message',{
         id:{
@@ -7,22 +6,14 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: true,
             autoIncrement: true
         },
-        // total:{
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false,
-        //     field: 'total'
-        // },
         //内容
         content:{
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             field:'content'
         },
         // 创建时间
         createdAt:{
-            type: DataTypes.DATE
-        },
-        updatedAt: {
             type: DataTypes.DATE
         }
     },{

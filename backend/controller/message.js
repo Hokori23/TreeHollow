@@ -7,24 +7,21 @@ class MessageController {
      * @returns {Promise.<void>}
      */
     static async getMessages(ctx, next){
-        //接收客服端
-        const { page = 1, capacity = 10 } = ctx.query;
-        const pageIndex = Number(page);
+        const { capacity, createdAt = new Date().getTime(), before = 1 } = ctx.query;
         const pageSize = Number(capacity);
-        if(pageIndex && pageSize){
+        const flag = Number(before);
+        if(pageSize){
             try{
-                //使用刚刚创建的文章ID查询文章详情，且返回文章详情信息
-                const res = await MessageModel.getMessages(pageIndex, pageSize);
+                const res = await MessageModel.getMessages(pageSize, createdAt, flag);
                 ctx.response.status = 200;
                 ctx.body = {
                     code: 0,
                     message: '获取消息记录成功',
                     data: {
-                        total: res.count,
-                        message: res.rows
+                        message: res
                     }
                 }
-            }catch(err){
+            } catch (err) {
                 ctx.response.status = 412;
                 ctx.body = {
                     code: 412,
@@ -47,22 +44,28 @@ class MessageController {
      * @returns {Promise.<void>}
      */
     static async sendMessage(ctx) {
-        let { content } = ctx.query;
+        const { content } = ctx.request.body;
+
         if (content) {
             try{
                 // 查询文章详情模型
-                await MessageModel.createMessage(content);
+                const res = await MessageModel.createMessage(content);
                 ctx.response.status = 200;
                 ctx.body = {
                     code: 0,
                     message: '发送成功',
+                    data: {
+                        id: res.id,
+                        content: res.content,
+                        createdAt: res.createdAt
+                    }
                 }
             }catch(err){
                 ctx.response.status = 412;
                 ctx.body = {
                     code: 412,
                     message: '发送失败',
-                    data
+                    data: err
                 }
             }
         }else {

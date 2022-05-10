@@ -6,7 +6,6 @@ const sequelize = new Sequelize('tree_hollow','tree_hollow','JrMPnzyJfLndMcs8',{
     dialectOptions:{
         //字符集
         charset:'utf8mb4',
-        collate:'utf8mb4_unicode_ci',
         supportBigNumbers: true,
         bigNumberStrings: true
     },

@@ -1,6 +1,6 @@
 // 引入mysql的配置文件
 const db = require('../config/db');
-const { DataTypes } = require('sequelize');
+const { DataTypes, Op } = require('sequelize');
 
 // 引入sequelize对象
 const Sequelize = db.sequelize;
@@ -17,32 +17,59 @@ class MessageModel {
      * @returns {Promise<*>}
      */
     static async createMessage(content) {
-        return await Message.create({
+        const res = await Message.create({
             content: content,
         });
+        return res;
     }
 
     /**
      * 查询历史消息记录
-     * @param page 页数
-     * @param capacity 每页条数
+     * @param pageSize 消息条数
      * @returns {Promise<Model>}
      */
-    static async getMessages(page, capacity) {
-        const res = await Message.findAndCountAll({
-            attributes: ['id', 'content', 'createdAt'],
-            order: [['createdAt', 'ASC']],
-            limit: capacity,
-            offset: (page - 1) * capacity,
-            // where,
-            // include: [{
-            //     model: Message,
-            //     as: 'MessageInfo',
-            // }],
-            // distinct: true
-        });
-
-        return res;
+    static async getMessages(pageSize, createdAt, before) {
+        console.log(createdAt, typeof before);
+        let ans = [];
+        if (before === 0) {
+            const res = await Message.findAll({
+                attributes: ['id', 'content', 'createdAt'],
+                order: [['createdAt', 'DESC']],
+                limit: pageSize,
+                where: {
+                    createdAt: {
+                        [Op.lt]: createdAt
+                    }
+                }
+                // include: [{
+                //     model: Message,
+                //     as: 'MessageInfo',
+                // }],
+                // distinct: true
+            });
+            // console.log(666, res);
+            for (let i = res.length - 1; i >= 0; i--) {
+                ans.push(res[i].dataValues);
+            }
+        } 
+        if (before === 1) {
+            const res = await Message.findAll({
+                attributes: ['id', 'content', 'createdAt'],
+                order: [['createdAt', 'DESC']],
+                limit: pageSize,
+                where: {
+                    createdAt: {
+                        [Op.gt]: createdAt
+                    }
+                }
+            });
+            // console.log(999, res);
+            res.forEach(item => {
+                ans.push(item.dataValues)
+            });
+        }
+        
+        return ans;
     }
 }
 

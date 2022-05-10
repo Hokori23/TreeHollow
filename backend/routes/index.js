@@ -11,8 +11,8 @@ const MessageController = require('../controller/message');
 //   })
 // })
 
-router.get('/getMessage', MessageController.getMessages);
+router.get('/get-messages', MessageController.getMessages);
 
-router.get('/sendMessage', MessageController.sendMessage)
+router.post('/send-message', MessageController.sendMessage)
 
 module.exports = router
