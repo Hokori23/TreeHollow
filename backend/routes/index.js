@@ -1,9 +1,9 @@
-const router = require('koa-router')()
+const Router = require('koa-router')
 const MessageController = require('../controller/message');
 
-// const router = new Router({
-//   prefix: '/api/v1'
-// });
+const router = new Router({
+  prefix: '/api/v1'
+});
 
 // router.get('/', async (ctx, next) => {
 //   await ctx.render('index', {
