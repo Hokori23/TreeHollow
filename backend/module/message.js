@@ -7,7 +7,7 @@ const Sequelize = db.sequelize;
 
 // 引入数据表模型
 const Message = require('../schema/message')(Sequelize, DataTypes);
-Message.sync({force: true}); //自动创建表
+// Message.sync({force: true}); //自动创建表
 
 class MessageModel {
     /**
@@ -47,7 +47,7 @@ class MessageModel {
                 // }],
                 // distinct: true
             });
-            // console.log(666, res);
+            console.log(666, res);
             for (let i = res.length - 1; i >= 0; i--) {
                 ans.push(res[i].dataValues);
             }

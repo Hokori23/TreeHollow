@@ -7,7 +7,7 @@ class MessageController {
      * @returns {Promise.<void>}
      */
     static async getMessages(ctx, next){
-        const { capacity, createdAt = new Date().getTime(), before = 1 } = ctx.query;
+        const { capacity, createdAt = new Date().getTime(), before = 0 } = ctx.query;
         const pageSize = Number(capacity);
         const flag = Number(before);
         if(pageSize){
