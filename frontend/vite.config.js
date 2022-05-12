@@ -14,4 +14,7 @@ export default defineConfig({
     ],
   },
   assetsInclude: ['**/*.ttf'],
+  server: {
+    port: 4000,
+  }
 });
