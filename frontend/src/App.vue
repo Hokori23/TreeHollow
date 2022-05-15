@@ -1,4 +1,3 @@
-
 <template>
   <div id="app">
     <!-- <Message /> -->
@@ -23,8 +22,8 @@ export default defineComponent({
   components: {
     Notification,
     MessageList,
-  }
-})
+  },
+});
 </script>
 
 <style>
@@ -37,8 +36,6 @@ html {
 * {
   -webkit-tap-highlight-color: transparent;
   --vs-cyan: 59, 222, 200;
-  padding: 0;
-  margin: 0;
 }
 @font-face {
   font-family: 'Poppins';
@@ -49,12 +46,13 @@ html {
   font-family: Poppins, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
+  background-color: honeydew;
+  margin: auto;
 }
 </style>

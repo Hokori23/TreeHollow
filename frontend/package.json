@@ -13,6 +13,8 @@
     "axios": "^0.27.2",
     "boxicons": "^2.1.2",
     "material-icons": "^1.10.9",
+    "nanoid": "^3.3.3",
+    "stylus": "^0.57.0",
     "vue": "^2.6.14",
     "vue-template-compiler": "^2.6.14",
     "vuesax": "^4.0.1-alpha.25"
