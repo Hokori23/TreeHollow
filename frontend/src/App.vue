@@ -6,7 +6,7 @@
 
 <script>
 import IndexList from './components/IndexList.vue';
-export default {
+export default{
   name: 'App',
   components: {
     IndexList,

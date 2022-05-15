@@ -58,8 +58,10 @@ export default {
          return '下拉获取历史消息';
        }else if(this.state == 1){
          return '松手更新消息';
-       }else {
+       }else if(this.state == 2){
          return '正在加载中'
+       }else{
+         return '已无更多历史消息'
        }
      },
    },
@@ -84,21 +86,17 @@ export default {
   },
   methods: {
     //输入框添加数据
-    addMessage() {
+    async addMessage() {
       this.ifShow = false;
       if (this.inputValue == '') {
         this.ifShow = true;
         return;
       }
-      let obj = {
-        id: nanoid(),
-        content: this.inputValue,
-        createdAt:Date.now()
-      };
-      this.dataObj.push(obj);
+      var newData = await sendMessage(this.inputValue);
       this.inputValue = '';
-      var cue = sendMessage(this.dataObj);
-      this.cue = cue.message;
+      console.log(newData.data.data);
+      newData.data.data['isNew'] = true;
+      this.dataObj.push(newData.data.data);
     },
     
     //判断是否到底部 
@@ -109,11 +107,6 @@ export default {
       var scrollTop = this.$refs.messages.scrollTop;
       var scrollHeight = this.$refs.messages.scrollHeight;
       if (viewHeight + scrollTop + 10 >= scrollHeight) {
-        //加载完所有数据
-        if (this.isFull) {
-          this.reminder = '数据到底啦';
-          return;
-        }
         //函数节流思想
         if(!this.timer)
           return;
@@ -121,8 +114,9 @@ export default {
         setTimeout(() => {
           console.log('我被调用啦');
           //获取数据
-          this.handlerMessage(2);
+          this.handlerMessage(2,this.dataObj[this.dataObj.length-1].createdAt,1);
           this.timer = true;
+          console.log('下拉加载了2条数据');
         }, 500);
       }
     },
@@ -137,25 +131,45 @@ export default {
             this.reminder = '数据到底啦';
             return;
           }
-          this.page += 1;
-          this.handlerMessage(this.page);
-          console.log('加载数据');
+          this.handlerMessage(2,this.dataObj[this.dataObj.length-1].createdAt,1);
       },{
         threshold:[1]
       })
       },
-    //重新加载后台数据
-    handlerMessage(num){
-      let req = getMessage(num);
+    //加载后台数据
+    async handlerMessage(capacity, createdAt, before){
+      this.isFull = false;
+      let req = await getMessage(capacity,createdAt ,before);
       //数据全部加载完
-      if(req.data.messages.length == 0){
-        this.isFull = true;
+      if(req.data.data.message.length == 0){
+       return this.isFull = true;
       }
-      if (req.code === 0) {
-          this.dataObj = this.dataObj.concat(req.data.messages);
+      
+      //获取到数据且数据加在数组后面
+      if (req.data.code === 0){
+          req.data.data.message.forEach(obj => {
+             obj['isNew'] = false;
+          });
+          return this.dataObj = this.dataObj.concat(req.data.data.message);
       }
-      console.log('增加了'+ num + '条数据耶');
     },
+    async updateMessage(capacity, createdAt, before){
+      this.isFull = false;
+      let req = await getMessage(capacity,createdAt ,before);
+      //数据全部加载完
+      if(req.data.data.message.length == 0){
+       return this.state = 3;
+      }
+      if(req.data.code === 0){
+          req.data.data.message.forEach(obj => {
+             obj['isNew'] = false;
+          });
+          this.dataObj = req.data.data.message.concat(this.dataObj);
+          return;
+      }
+    },
+
+
     touchstart(event){
       this.distance = 0;
       //获取初始滑动的Y坐标
@@ -186,25 +200,35 @@ export default {
         this.state = 2;
         //更新数据
         setTimeout(() => {
-          this.handlerMessage(2);
+          this.updateMessage(4,this.dataObj[0].createdAt,0);
           this.state = 0; 
           this.distance = 0;
+          console.log('上拉加载了4条数据哦');
         }, 1000);
       }else{
         //否则恢复
         this.distance = 0;
       }
+    },
+  },
+  watch:{
+    isFull(value){
+      if(value){
+        this.reminder = '数据到底啦';
+      }
     }
   },
   mounted() {
+    //开始加载15条数据
     this.handlerMessage(15);
+
   }
-  
+
 }
 </script>
 
 <style scoped>
-* {
+*{
   padding: 0;
   margin: 0;
 }
@@ -264,7 +288,7 @@ export default {
   width: 100%;
 }
 .reminder {
-  color: aqua;
+  color: #2DC4D5;
   width: 100px;
   margin: auto;
 }

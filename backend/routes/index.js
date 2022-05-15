@@ -15,4 +15,4 @@ router.get('/get-messages', MessageController.getMessages);
 
 router.post('/send-message', MessageController.sendMessage)
 
-module.exports = router
+module.exports = router      
