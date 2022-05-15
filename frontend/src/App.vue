@@ -1,7 +1,19 @@
+
+<template>
+  <div id="app">
+    <!-- <Message /> -->
+    <Notification />
+    <!-- <IndexList  /> -->
+    <MessageList />
+  </div>
+</template>
+
 <script>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 // import HelloWorld from './components/HelloWorld.vue';
+import IndexList from './components/IndexList.vue';
+import MessageList from './components/MessageList.vue';
 import Message from './components/Message/Index.vue';
 import Notification from './components/Notification/Index.vue';
 import { defineComponent } from '@vue/composition-api';
@@ -9,18 +21,11 @@ import { defineComponent } from '@vue/composition-api';
 export default defineComponent({
   name: 'App',
   components: {
-    Message,
     Notification,
-  },
-});
+    MessageList,
+  }
+})
 </script>
-
-<template>
-  <div id="app">
-    <Message />
-    <Notification />
-  </div>
-</template>
 
 <style>
 body,
@@ -32,6 +37,8 @@ html {
 * {
   -webkit-tap-highlight-color: transparent;
   --vs-cyan: 59, 222, 200;
+  padding: 0;
+  margin: 0;
 }
 @font-face {
   font-family: 'Poppins';

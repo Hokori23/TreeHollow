@@ -7,6 +7,7 @@ import 'animate.css';
 import '@/assets/boxicons.min.css';
 
 Vue.use(VueCompositionAPI);
+// import 'material-icons/iconfont/material-icons.css';
 Vue.use(Vuesax, {
   // options here
 });

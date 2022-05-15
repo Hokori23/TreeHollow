@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vue/composition-api": "^1.6.0",
     "animate.css": "^4.1.1",
+    "@vue/composition-api": "^1.6.1",
     "axios": "^0.27.2",
     "boxicons": "^2.1.2",
     "material-icons": "^1.10.9",
@@ -35,8 +35,8 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS || (node ../.scripts/pre_commit.cjs && exit 8)",
-      "post-merge": "sh ../.scripts/update_dependencies.sh"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS || (node ./.scripts/pre_commit.cjs && exit 8)",
+      "post-merge": "sh ./.scripts/update_dependencies.sh"
     }
   },
   "lint-staged": {
