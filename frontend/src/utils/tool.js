@@ -5,3 +5,6 @@ export const ls = {
     return raw ? rawData : JSON.parse(rawData);
   },
 };
+
+export const getStyle = (selector) => getComputedStyle(document.querySelector(selector));
+export const getEl = (selector) => document.querySelector(selector);

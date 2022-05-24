@@ -1,7 +1,8 @@
-import { ref, reactive } from '@vue/composition-api';
+import { ref, nextTick } from '@vue/composition-api';
 import { getMessage, sendMessage } from '@/api/messagesv2.js';
 export default () => {
   const messageList = ref([]);
+  const messageBox = ref(null);
 
   const topTips = ref('');
   const bottomTips = ref('');
@@ -11,12 +12,12 @@ export default () => {
   const loadingSend = ref(false);
 
   // 下拉获取新数据
-  const handleGetNewMessage = async (createdAt) => {
+  const handleGetNewMessage = async (createdAt, before) => {
     loadingBottom.value = true;
-    const { data } = await getMessage(5, createdAt, false);
+    const { data } = await getMessage(10, createdAt, before);
 
     // 处理数据
-    messageList.value.push(...(data?.data?.message || []));
+    messageList.value.push(...(data?.message || []));
     loadingBottom.value = false;
   };
 
@@ -26,7 +27,7 @@ export default () => {
     const { data } = await getMessage(5, createdAt, true);
 
     // 处理数据
-    messageList.value.unshift(...(data.message || []));
+    messageList.value.unshift(...(data?.message || []));
     loadingTop.value = false;
   };
 
@@ -37,7 +38,7 @@ export default () => {
     const { data } = await sendMessage(content);
 
     // 处理数据
-    messageList.value.unshift(...(data.message || []));
+    messageList.value.unshift(...(data?.message || []));
     loadingSend.value = false;
   };
 
@@ -47,6 +48,8 @@ export default () => {
       loadingTop,
       loadingSend,
     },
+    messageList,
+    messageBox,
     handleGetNewMessage,
     handleGetOldMessage,
     handleSendMessage,

@@ -17,9 +17,4 @@ export default defineConfig({
     port: 8000,
   },
   assetsInclude: ['**/*.ttf'],
-  //只加了下面这个
-  server: {
-    port: 8000
-  }
 });
-

@@ -1,7 +1,6 @@
 <template>
-  <div class="message-item">
-    test test test testtest test test testtest test test testtest test test testtest test test testtest test test
-    testtest test test test
+  <div>
+    <div v-for="item in messages" :key="item.id" class="message-item">{{ item.content }}</div>
   </div>
 </template>
 
@@ -10,15 +9,21 @@ import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   name: 'MessageItem',
-  setup() {},
+  props: {
+    messages: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+  },
 });
 </script>
 
 <style lang="scss" scoped>
 .message-item {
   max-width: 200px;
-  padding: 20px 10px;
-  margin: 10px 0;
+  padding: 15px;
+  margin: 12px 0;
   border: 3px solid transparent;
   border-left: 3px solid rgb(var(--vs-cyan));
   border-radius: 20px;

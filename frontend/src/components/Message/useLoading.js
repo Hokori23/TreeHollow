@@ -1,4 +1,4 @@
-import { ref, toRefs, watch, getCurrentInstance } from '@vue/composition-api';
+import { ref, watch, getCurrentInstance } from '@vue/composition-api';
 
 export default (loading) => {
   const vm = getCurrentInstance();

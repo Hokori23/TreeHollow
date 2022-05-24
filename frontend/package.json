@@ -8,10 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "animate.css": "^4.1.1",
     "@vue/composition-api": "^1.6.1",
+    "animate.css": "^4.1.1",
     "axios": "^0.27.2",
     "boxicons": "^2.1.2",
+    "hammerjs": "^2.0.8",
     "material-icons": "^1.10.9",
     "nanoid": "^3.3.3",
     "stylus": "^0.57.0",
